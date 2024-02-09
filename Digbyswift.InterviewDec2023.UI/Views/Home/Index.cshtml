@@ -1,11 +1,85 @@
-﻿@{
+﻿@model IEnumerable<Digbyswift.InterviewDec2023.Infrastructure.Models.Staff>
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Staff List</h1>
-    <p>Select to load <select>
-        <option>Select one</option>
-    </select></p>
-    <div id="staff-container"></div>
+    <p>Select to load 
+        <select id="staffSelector" onchange="myFunction(this.value)">
+        <option value="noSelection">Select one</option>
+        @foreach (var staff in Model)
+            {
+                <option value=@staff.Id>@staff.FullName</option>
+            }
+        </select></p>
+    <div id="staff-container">
+        <table>
+            <tr>
+                <th>FullName</th>
+                <th>Email</th>
+                <th>JobTitle</th>
+                <th>Likes</th>
+            </tr>
+            <tr id="selectedStaffMember-container">                
+            </tr>
+        </table>
+    </div>
 </div>
+
+<script>
+    function myFunction(selectedId) { 
+        var tableContainer = document.getElementById("selectedStaffMember-container");
+        if (selectedId != "noSelection") {
+            var staffId = selectedId;
+            var xhttp = new XMLHttpRequest();
+            var url = `https://localhost:7008/Home/Get?id=${staffId}`;
+            fetch(url)
+                .then(
+                    function (response) {
+                        if (response.status !== 200) {
+                            console.log("not found");
+                            return;
+                        }
+                        response.json().then(function (data) {
+                            console.log(data);
+                            const likes = data.likes;
+                            tableContainer.innerHTML = `<td>${data.fullName}</td><td>${data.email}</td><td>${data.jobTitle}</td><td id="likes"></td>`;
+                            var likesContainer = document.getElementById("likes");
+                            var i = 1;
+                            if (likes != null) {
+                                for (var like in likes) {
+                                    if (i != likes.length) {
+                                        likesContainer.innerHTML += likes[like] + ", ";
+                                    } else {
+                                        likesContainer.innerHTML += likes[like];
+                                    }
+                                    i++;
+                                }
+                            } else likesContainer.innerHTML += "NOTHING";
+                        });
+                    }
+                )
+                .catch(function (err) {
+                    console.log('fetch error', err);
+                });
+        } else tableContainer.innerHTML = "";
+    }
+</script>
+<style>
+    table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #dddddd;
+    }
+</style>

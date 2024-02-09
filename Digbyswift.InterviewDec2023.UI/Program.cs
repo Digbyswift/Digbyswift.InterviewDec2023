@@ -1,7 +1,10 @@
+using Digbyswift.InterviewDec2023.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IStaffRepository, StaffRepository>();
 
 var app = builder.Build();
 

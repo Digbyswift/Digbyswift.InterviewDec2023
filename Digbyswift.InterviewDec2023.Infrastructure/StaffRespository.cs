@@ -1,15 +1,28 @@
-﻿namespace Digbyswift.InterviewDec2023.Infrastructure;
+﻿using Digbyswift.InterviewDec2023.Infrastructure.Models;
+
+namespace Digbyswift.InterviewDec2023.Infrastructure;
 
 public interface IStaffRepository
 {
-    Staff Get(int id);
+    Task<Staff> Get(int id);
+    Task<IEnumerable<Staff>> GetAllStaffNames();
 }
 
 public class StaffRepository : IStaffRepository
 {
-    public Staff Get(int id)
+    public async Task<Staff> Get(int id)
     {
-        return AllStaff().First(x => x.Id == id);
+        if (AllStaff().Where(x => x.Id == id).Count() != 0)
+        {
+            return AllStaff().First(x => x.Id == id);
+        }
+
+        else return new Staff();
+    }
+
+    public async Task<IEnumerable<Staff>> GetAllStaffNames()
+    {
+        return AllStaff();
     }
 
     private IEnumerable<Staff> AllStaff()
@@ -26,6 +39,7 @@ public class StaffRepository : IStaffRepository
             },
             new Staff()
             {
+                //kept wrong to prove not exist
                 Id = 556,
                 FullName = "Joe Earnshaw",
                 Email = "joe@digbyswift.com",
@@ -36,17 +50,9 @@ public class StaffRepository : IStaffRepository
                 Id = 838,
                 FullName = "Owen Manby",
                 Email = "owen@digbyswift.com",
+                JobTitle = "Owner/Lead Developer",
                 Likes = new [] {"Tintin","Asterix"}
             },
         };
     }
-}
-
-public class Staff
-{
-    public int Id { get; set; }
-    public string FullName { get; set; }
-    public string Email { get; set; }
-    public string JobTitle { get; set; }
-    public string[] Likes { get; set; }
 }
